@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fisrtapp/Product_by_categorie.dart';
 
 
 class ProductCategories extends StatefulWidget {
@@ -73,7 +74,11 @@ class Categorie extends StatelessWidget {
   Widget build(BuildContext context) {
     return 
     InkWell(
-      onTap: (){},
+      onTap: (){
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> Productbycategorie(
+          prodcat: categorie_name,
+        )));
+      },
       child: Card(
 
       child: Image.asset(categorie_picture,),  

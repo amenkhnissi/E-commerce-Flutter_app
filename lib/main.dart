@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:fisrtapp/Product.dart';
 import 'Product_categories.dart';
+import 'package:fisrtapp/Shopping_cart.dart';
 
 void main() => runApp(new MaterialApp(routes: <String, WidgetBuilder>{
       "/Home": (BuildContext context) => MyApp(),
@@ -36,7 +37,9 @@ class _AppState extends State<MyApp> with SingleTickerProviderStateMixin {
         title: Text('Store'),
         actions: <Widget>[
           IconButton(icon: Icon(Icons.search), onPressed: () {}),
-          IconButton(icon: Icon(Icons.shopping_cart), onPressed: () {})
+          IconButton(icon: Icon(Icons.shopping_cart), onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context)=> ShoppingCart() ));
+          })
         ],
       ),
       //Drawer
