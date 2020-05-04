@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fisrtapp/Product_by_categorie.dart';
+import './Product_by_categorie.dart';
 
 
 class ProductCategories extends StatefulWidget {

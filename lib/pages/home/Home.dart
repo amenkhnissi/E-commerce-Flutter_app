@@ -1,19 +1,26 @@
+import 'package:fisrtapp/pages/Wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:carousel_pro/carousel_pro.dart';
-import 'package:fisrtapp/Product.dart';
-import 'package:fisrtapp/Product_categories.dart';
-import 'package:fisrtapp/Shopping_cart.dart';
-import 'package:fisrtapp/login_pages/Welcome.dart';
+import '../templates/Product.dart';
+import '../templates/Product_categories.dart';
+import '../templates/Shopping_cart.dart';
+import '../../services/auth.dart';
+import 'package:provider/provider.dart';
+import '../../models/user.dart';
 
 
-class MyApp extends StatefulWidget {
+
+class Home extends StatefulWidget {
   @override
-  _AppState createState() => new _AppState();
+  _HomeState createState() => new _HomeState();
 }
 
-class _AppState extends State<MyApp> with SingleTickerProviderStateMixin {
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+
   var tabController;
+  final AuthService _auth = AuthService();
+  
 
   @override
   void initState() {
@@ -29,31 +36,41 @@ class _AppState extends State<MyApp> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context);
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.redAccent,
         title: Text('Store'),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.search), onPressed: () {
-         Navigator.push(context, MaterialPageRoute(builder: (context)=> WelcomePage() ));
-
-          }
-          ),
-          IconButton(icon: Icon(Icons.shopping_cart), onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context)=> ShoppingCart() ));
-          })
+          IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+               
+              }),
+          IconButton(
+              icon: Icon(Icons.shopping_cart),
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ShoppingCart()));
+              })
         ],
       ),
       //Drawer
-      drawer: Drawer(
+     
+        drawer:   Drawer(
         child: ListView(
           children: <Widget>[
             UserAccountsDrawerHeader(
-                accountName: Text('Amen Khnissi'),
-                accountEmail: Text('amen@icloud.com'),
-                currentAccountPicture: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      'https://images.unsplash.com/photo-1505022610485-0249ba5b3675?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80'),
-                )),
+              accountName: Text('Amen Khnissi'),
+              accountEmail: Text('amen@icloud.com'),
+              currentAccountPicture: CircleAvatar(
+                backgroundImage: NetworkImage(
+                    'https://images.unsplash.com/photo-1505022610485-0249ba5b3675?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80'),
+              ),
+              otherAccountsPictures: <Widget>[
+                Icon(Icons.person),
+              ],
+            ),
             ListTile(
               leading: Icon(
                 Icons.shop,
@@ -82,12 +99,26 @@ class _AppState extends State<MyApp> with SingleTickerProviderStateMixin {
               ),
               title: Text('Shop'),
             ),
+            Divider(
+              height: 2.0,
+              color: Colors.black45,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                FlatButton.icon(onPressed: () async {
+                  await  _auth.signOut();
+                 
+
+                }, 
+                icon: Icon(Icons.person), label: Text('Sign out'))
+              ],
+            ),
           ],
         ),
       ),
       body: ListView(
         children: <Widget>[
-
           //Carousol
 
           SizedBox(
@@ -108,10 +139,7 @@ class _AppState extends State<MyApp> with SingleTickerProviderStateMixin {
                 style: TextStyle(fontWeight: FontWeight.bold)),
           ),
 
-          Container(
-              height: 100.0,
-              child: ProductCategories() 
-              ),
+          Container(height: 100.0, child: ProductCategories()),
 
           //GridView
 
@@ -187,9 +215,22 @@ class _AppState extends State<MyApp> with SingleTickerProviderStateMixin {
         ],
       ),
       //bottom NavBar
+      
 
-      floatingActionButton: FloatingActionButton(onPressed: () {}),
+      
+      floatingActionButton: user == null ? Text('')  :FloatingActionButton(
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.redAccent,
+        onPressed: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> Wrapper()    ));
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(left:10.0),
+        child: Text('Shop now',style: TextStyle(fontSize: 17.0)),
+      ),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      
     );
   }
 }

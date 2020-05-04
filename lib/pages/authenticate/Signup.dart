@@ -1,25 +1,36 @@
-import 'package:fisrtapp/login_pages/Signup.dart';
+
+import 'package:fisrtapp/pages/authenticate/Widget/loading.dart';
 import 'package:fisrtapp/services/auth.dart';
 import 'package:flutter/material.dart';
 import './Widget/FadeAnimation.dart';
 
-class Signin extends StatefulWidget {
+class Signup extends StatefulWidget {
+   
+   
+   final Function toggleView;
+  Signup({ this.toggleView });
+
   @override
-  _SigninState createState() => _SigninState();
+  _SignupState createState() => _SignupState();
 }
 
-class _SigninState extends State<Signin> {
-
+class _SignupState extends State<Signup> {
   final AuthService _auth = AuthService();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailTextController = TextEditingController(); 
-  final TextEditingController _passwordTextController = TextEditingController(); 
+
+  String error = '';
+  bool loading = false;
+
+  // text field state
+  String email = '';
+  String password = '';
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
-    return Scaffold(
+    return loading ? Loading(): Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
@@ -64,15 +75,31 @@ class _SigninState extends State<Signin> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  FadeAnimation(
-                      1.5,
-                      Text(
-                        "Login",
-                        style: TextStyle(
-                            color: Color.fromRGBO(49, 39, 79, 1),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 30),
-                      )),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      FadeAnimation(
+                          1.5,
+                          Text(
+                            "Sign up",
+                            style: TextStyle(
+                                color: Color.fromRGBO(49, 39, 79, 1),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 30),
+                          )),
+                            SizedBox(
+                        width: 80.0,
+                      ),
+                      FadeAnimation(
+                          1.5,
+                          FlatButton.icon(
+                              onPressed: () {
+                                Navigator.pushNamed(context, 'home');
+                              },
+                              icon: Icon(Icons.home),
+                              label: Text('Home'))),
+                    ],
+                  ),
                   SizedBox(
                     height: 30,
                   ),
@@ -91,27 +118,26 @@ class _SigninState extends State<Signin> {
                             ]),
                         child: Form(
                           key: _formKey,
-                            child: Column(
+                          child: Column(
                             children: <Widget>[
-                              
                               Container(
                                 padding: EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                     border: Border(
-                                        bottom:
-                                            BorderSide(color: Colors.grey[200]))),
+                                        bottom: BorderSide(
+                                            color: Colors.grey[200]))),
                                 child: TextFormField(
                                   decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: "Email",
-                                      icon: Icon(Icons.email),
-                                      hintStyle: TextStyle(color: Colors.grey),
-                                      ),
-                                      keyboardType: TextInputType.emailAddress,
-                                      controller: _emailTextController,
-                                      validator: validateEmail,
-                                      
-                                    
+                                    border: InputBorder.none,
+                                    hintText: "Email",
+                                    icon: Icon(Icons.email),
+                                    hintStyle: TextStyle(color: Colors.grey),
+                                  ),
+                                  keyboardType: TextInputType.emailAddress,
+                                  onChanged: (val) {
+                                    setState(() => email = val);
+                                  },
+                                  validator: validateEmail,
                                 ),
                               ),
                               Container(
@@ -120,13 +146,14 @@ class _SigninState extends State<Signin> {
                                   decoration: InputDecoration(
                                       border: InputBorder.none,
                                       hintText: "Password",
-                                        icon: Icon(Icons.lock_outline),
-
+                                      icon: Icon(Icons.lock_outline),
                                       hintStyle: TextStyle(color: Colors.grey)),
-                                      keyboardType: TextInputType.visiblePassword,
-                                      controller: _passwordTextController,
-                                      validator: validatePassword,
-                                      obscureText: true,
+                                  keyboardType: TextInputType.visiblePassword,
+                                  onChanged: (val) {
+                                    setState(() => password = val);
+                                  },
+                                  validator: validatePassword,
+                                  obscureText: true,
                                 ),
                               )
                             ],
@@ -136,14 +163,6 @@ class _SigninState extends State<Signin> {
                   SizedBox(
                     height: 20,
                   ),
-                  FadeAnimation(
-                      1.7,
-                      Center(
-                          child: Text(
-                        "Forgot Password?",
-                        style:
-                            TextStyle(color: Color.fromRGBO(196, 135, 198, 1)),
-                      ))),
                   SizedBox(
                     height: 30,
                   ),
@@ -158,38 +177,52 @@ class _SigninState extends State<Signin> {
                         ),
                         child: Center(
                           child: RaisedButton(
-                             color: Color.fromRGBO(49, 39, 79, 1),
+                            color: Color.fromRGBO(49, 39, 79, 1),
                             onPressed: () async {
-                              if(_formKey.currentState.validate()){
-
-
+                              if (_formKey.currentState.validate()) {
+                                setState(() {
+                                    loading = true; 
+                                        });
+                                  
+                                dynamic result =
+                                    await _auth.registerWithEmailAndPassword(
+                                        email, password);
+                                        
+                                if (result == null) {
+                                  setState(() {
+                                    loading = false;
+                                   
+                                  });
+                                   error = 'Please ...';
+                                }
                               }
-
                             },
-                                child: Text(
-                              "Login",
+                            child: Text(
+                              "Register",
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
                         ),
                       )),
                   SizedBox(
-                    height: 30,
+                    height: 10,
                   ),
-                 FadeAnimation(
+                  FadeAnimation(
                       2,
                       Center(
-                          child: InkWell(
-                            onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=> Signup() ));
-
+                        child: FlatButton.icon(
+                            onPressed: () {
+                              widget.toggleView();
                             },
-
-                        child: Text(
-                        "Create Account",
-                        style: TextStyle(color: Color.fromRGBO(49, 39, 79, .6)),
+                            icon: Icon(Icons.person),
+                            label: Text('Sign in')),
+                      )
                       ),
-                          ))),
+                      SizedBox(height: 10.0),
+                      Text(
+                error,
+                style: TextStyle(color: Colors.red, fontSize: 14.0),
+              )
                 ],
               ),
             )
@@ -200,23 +233,22 @@ class _SigninState extends State<Signin> {
   }
 }
 
-
 // Email Validator
 String validateEmail(String value) {
-    Pattern pattern =
-        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-    RegExp regex = new RegExp(pattern);
-    if (!regex.hasMatch(value))
-      return 'Enter Valid Email';
-    else
-      return null;
-  }
+  Pattern pattern =
+      r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+  RegExp regex = new RegExp(pattern);
+  if (!regex.hasMatch(value))
+    return 'Enter Valid Email';
+  else
+    return null;
+}
 
 // Name validator
 
 String validatePassword(String value) {
-    if (value.length < 8 || value.isEmpty )
-      return 'Password must be >= than 8 charaters';
-    else
-      return null;
-  }  
+  if (value.length < 8 || value.isEmpty)
+    return 'Password must be >= than 8 charaters';
+  else
+    return null;
+}
