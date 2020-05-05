@@ -1,5 +1,4 @@
 
-import 'package:fisrtapp/pages/authenticate/Widget/loading.dart';
 import 'package:fisrtapp/services/auth.dart';
 import 'package:flutter/material.dart';
 import './Widget/FadeAnimation.dart';
@@ -20,7 +19,6 @@ class _SignupState extends State<Signup> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String error = '';
-  bool loading = false;
 
   // text field state
   String email = '';
@@ -30,7 +28,7 @@ class _SignupState extends State<Signup> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
-    return loading ? Loading(): Scaffold(
+    return  Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
@@ -180,19 +178,15 @@ class _SignupState extends State<Signup> {
                             color: Color.fromRGBO(49, 39, 79, 1),
                             onPressed: () async {
                               if (_formKey.currentState.validate()) {
-                                setState(() {
-                                    loading = true; 
-                                        });
+                               
                                   
                                 dynamic result =
                                     await _auth.registerWithEmailAndPassword(
                                         email, password);
                                         
                                 if (result == null) {
-                                  setState(() {
-                                    loading = false;
-                                   
-                                  });
+
+                                  
                                    error = 'Please ...';
                                 }
                               }

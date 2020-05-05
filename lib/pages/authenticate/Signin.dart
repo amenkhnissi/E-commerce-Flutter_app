@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import './Widget/FadeAnimation.dart';
 
 
+
 class Signin extends StatefulWidget {
   final Function toggleView;
   Signin({this.toggleView});
