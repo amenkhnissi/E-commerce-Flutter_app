@@ -13,7 +13,7 @@ class _ProductsState extends State<Products> {
     {
 
       "name":"Pink dress",
-      "picture":"https://images.unsplash.com/photo-1563293958-0b31aeb0cecb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=354&q=80",
+      "picture":"assets/images/pic4.jpg",
       "description":"New Collection",
       "detail":"Coton",
       "old_price":100,
@@ -23,7 +23,7 @@ class _ProductsState extends State<Products> {
     {
 
       "name":"leather coat",
-      "picture":"https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=726&q=80",
+      "picture":"assets/images/pic5.jpg",
       "description":"New Collection",
       "detail":"Coton",
       "old_price":120,
@@ -73,34 +73,37 @@ class Product extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  InkWell(
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => 
+    return  Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: InkWell(
+                onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => 
 
-                ProductDetail(
-                product_detail_name: prod_name,
-                product_detail_picture: prod_picture,
-                product_detail_description: prod_description,
-                product_detail_detail: prod_detail,
-                product_detail_old_price: prod_old_price,
-                product_detail_price: prod_price,
-                
-                )
+                  ProductDetail(
+                  product_detail_name: prod_name,
+                  product_detail_picture: prod_picture,
+                  product_detail_description: prod_description,
+                  product_detail_detail: prod_detail,
+                  product_detail_old_price: prod_old_price,
+                  product_detail_price: prod_price,
+                  
+                  )
 
-                ));
-              },
-            child:GridTile(
-      footer: GridTileBar(
-        backgroundColor: Colors.white60,
-        leading: Text(prod_name),
-        title: Text('£'+prod_old_price.toString(),style: TextStyle(color:Colors.red),),
-        subtitle: Text('£'+prod_price.toString(),style: TextStyle(color:Colors.black)),
+                  ));
+                },
+              child:GridTile(
+        footer: GridTileBar(
+          backgroundColor: Colors.white60,
+          leading: Text(prod_name),
+          title: Text('£'+prod_old_price.toString(),style: TextStyle(color:Colors.red),),
+          subtitle: Text('£'+prod_price.toString(),style: TextStyle(color:Colors.black)),
 
-      ),
-      child:  
-      Image.network(prod_picture, fit: BoxFit.cover,),
-      )
-            );
+        ),
+        child:  
+        Image.asset(prod_picture, fit: BoxFit.cover,),
+        )
+              ),
+    );
     
     
     

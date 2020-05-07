@@ -13,11 +13,12 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
+
     final user = Provider.of<User>(context);
 
     final users = Provider.of<QuerySnapshot>(context);
 
-    final profile = DatabaseService().getData(user.uid);
+    final profile =  user == null ? null  : DatabaseService().getData(user.uid);
 
     
 
@@ -43,8 +44,7 @@ class _ProfileState extends State<Profile> {
               accountEmail:
                   !snapshot.hasData ? Text('') : Text(snapshot.data['email']),
               currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage(
-                    'https://images.unsplash.com/photo-1505022610485-0249ba5b3675?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80'),
+                backgroundImage: AssetImage('assets/images/pic2.jpg') ,
               ),
               otherAccountsPictures: <Widget>[
                 InkWell(
@@ -70,7 +70,7 @@ class _UserUpdateFormState extends State<UserUpdateForm> {
 
     final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     final user = Provider.of<User>(context);
-    final profile = DatabaseService().getData(user.uid);
+    final profile =  user == null ? null: DatabaseService().getData(user.uid);
 
     String error = '';
 
@@ -157,10 +157,9 @@ class _UserUpdateFormState extends State<UserUpdateForm> {
 
                   if (_formKey.currentState.validate())  {
                    await DatabaseService(uid: user.uid, email: user.email).updateUserData(
-                     _username  ?? snapshot.data['username']  , 
-                     _email ?? snapshot.data['email'],
+                     _username == null ? snapshot.data['username'] :  _username , 
+                     _email == null ? snapshot.data['email'] : _email,
                      ); 
-                     print(snapshot.data['email']);
                     Navigator.pop(context);
                   }
                 

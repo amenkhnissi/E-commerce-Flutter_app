@@ -116,10 +116,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             SizedBox(
               height: 220.0,
               child: Carousel(boxFit: BoxFit.cover, images: [
-                NetworkImage(
-                    'https://images.unsplash.com/photo-1515664069236-68a74c369d97?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80'),
-                NetworkImage(
-                    'https://images.unsplash.com/photo-1494607239400-ff147da48308?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1041&q=80'),
+               AssetImage('assets/images/pic1.jpg'),
+               AssetImage('assets/images/pic3.jpg'),
+                
               ]),
             ),
 
@@ -151,8 +150,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   Container(
                       height: 300,
                       width: 177.0,
-                      child: Image.network(
-                        'https://images.unsplash.com/photo-1495385794356-15371f348c31?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=319&q=80',
+                      child: Image.asset(
+                        'assets/images/pic2.jpg',
                         fit: BoxFit.cover,
                       )),
                   Container(
@@ -197,10 +196,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   Container(
                       height: 300,
                       width: 177.0,
-                      child: Image.network(
-                        'https://images.unsplash.com/photo-1551212765-dce5ee657676?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=334&q=80',
+                      child:Image.asset(
+                        'assets/images/pic4.jpg',
                         fit: BoxFit.cover,
-                      )),
+                      ),
+                       
+                      ),
                 ],
               ),
             ),

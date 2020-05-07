@@ -12,50 +12,46 @@ class _ProductCategoriesState extends State<ProductCategories> {
   var categories_list =[
 
     {
-      "picture":"assets/images/bag.png",
-      "name":"Bag"
+      "picture":"assets/images/bags.jpg",
+      "name":"Bags"
     },
     {
-      "picture":"assets/images/Costumn.png",
-      "name":"Costumn"
-      
-    },
-    {
-      "picture":"assets/images/jeans.png",
+      "picture":"assets/images/jeans.jpg",
       "name":"Jeans"
     },
     {
-      "picture":"assets/images/shirt.png",
-      "name":"Shirt"
+      "picture":"assets/images/shirts.jpg",
+      "name":"Shirts"
     },
     {
-      "picture":"assets/images/talon.png",
-      "name":"Talon"
+      "picture":"assets/images/talon.jpg",
+      "name":"Heels"
     },
     {
-      "picture":"assets/images/suit.png",
-      "name":"Suit"
+      "picture":"assets/images/suit.jpg",
+      "name":"Suits"
     },
     {
-      "picture":"assets/images/t-shirt.png",
-      "name":"t-shirt"
+      "picture":"assets/images/t-shirts.jpg",
+      "name":"T-shirts"
     },
  
   ];
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: categories_list.length,
-      itemBuilder: (BuildContext context,int index){
-        return Categorie(
-          categorie_picture:  categories_list[index]['picture'] ,
-          categorie_name: categories_list[index]['name'],
-        );
+    return  ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories_list.length,
+        itemBuilder: (BuildContext context,int index){
+          return Categorie(
+            categorie_picture:  categories_list[index]['picture'] ,
+            categorie_name: categories_list[index]['name'],
+          );
 
 
-      }
+        }
+     
     );
     }
 }
@@ -79,11 +75,38 @@ class Categorie extends StatelessWidget {
           prodcat: categorie_name,
         )));
       },
-      child: Card(
+      child: 
+      Stack(children: <Widget>[
 
-      child: Image.asset(categorie_picture,),  
+         Padding(
+        padding: const EdgeInsets.only(top :4.0,right:4.0),
+        child: Container(
+          height: 150.0,
+          width: 150.0,
+          decoration: BoxDecoration(
+            image: DecorationImage(image: AssetImage(categorie_picture),fit: BoxFit.cover ),
+            border: Border.all(color: Colors.black38,
+            width: 1,
+            ),
+            borderRadius: BorderRadius.circular(5)
+          ),
+        ),
+      ),
+      Positioned(
+                left: 8,
+                top: -4,
+                child: Container(
+                  padding: EdgeInsets.only(bottom: 10, left: 10, right: 10),
+                  color: Colors.transparent,
+                  child: Text(
+                    categorie_name,
+                    style: TextStyle(color: Colors.red, fontSize: 15,fontWeight: FontWeight.bold),
+                  ),
+                )),
 
-    ) ,
+      ],),
+     
+      
 
     );
    

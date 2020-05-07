@@ -64,7 +64,7 @@ class _ProductDetailState extends State<ProductDetail> with SingleTickerProvider
 
       ),
       child:  
-      Image.network(widget.product_detail_picture, fit: BoxFit.cover,),
+      Image.asset(widget.product_detail_picture, fit: BoxFit.cover,),
       )
           ),
 
