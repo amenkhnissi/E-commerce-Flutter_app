@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fisrtapp/services/database.dart';
 import 'package:flutter/material.dart';
 import './Product_detail.dart';
 
@@ -8,46 +10,32 @@ class Products extends StatefulWidget {
 }
 
 class _ProductsState extends State<Products> {
-  var product_list = [
-
-    {
-
-      "name":"Pink dress",
-      "picture":"assets/images/pic4.jpg",
-      "description":"New Collection",
-      "detail":"Coton",
-      "old_price":100,
-      "price":80
-
-    },
-    {
-
-      "name":"leather coat",
-      "picture":"assets/images/pic5.jpg",
-      "description":"New Collection",
-      "detail":"Coton",
-      "old_price":120,
-      "price":90
-
-    }
-  ];
+  final DatabaseService _database = DatabaseService();
+  
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      itemCount: product_list.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2) , 
-      itemBuilder: (BuildContext context, int index){
-        return Product(
-          prod_name: product_list[index]['name'],
-          prod_picture: product_list[index]['picture'],
-          prod_description: product_list[index]['description'],
-          prod_detail: product_list[index]['detail'],
-          prod_old_price: product_list[index]['old_price'],
-          prod_price: product_list[index]['price'],
-          
-        );
+    return StreamBuilder<QuerySnapshot>(
+      stream: _database.product,
+      builder: (context, snapshot) {
+        if (snapshot.hasData);
+        var data = snapshot.data;
+        return GridView.builder(
+          itemCount: 3,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2) , 
+          itemBuilder: (BuildContext context, int index){
+            return Product(
+              prod_name: data.documents[index]['product name'],
+              prod_picture: data.documents[index]['Product image'],
+              prod_description: '',
+              prod_detail: data.documents[index]['Product detail'],
+              prod_old_price: '',
+              prod_price: data.documents[index]['Product price'],
+              
+            );
 
-      });
+          });
+      }
+    );
   }
 }
 
@@ -80,12 +68,12 @@ class Product extends StatelessWidget {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => 
 
                   ProductDetail(
-                  product_detail_name: prod_name,
-                  product_detail_picture: prod_picture,
-                  product_detail_description: prod_description,
-                  product_detail_detail: prod_detail,
-                  product_detail_old_price: prod_old_price,
-                  product_detail_price: prod_price,
+                  prod_detail_name: prod_name,
+                  prod_detail_picture: prod_picture,
+                  prod_detail_description: prod_description,
+                  prod_detail_detail: prod_detail,
+                  prod_detail_old_price: prod_old_price,
+                  prod_detail_price: prod_price,
                   
                   )
 
@@ -95,12 +83,13 @@ class Product extends StatelessWidget {
         footer: GridTileBar(
           backgroundColor: Colors.white60,
           leading: Text(prod_name),
-          title: Text('£'+prod_old_price.toString(),style: TextStyle(color:Colors.red),),
-          subtitle: Text('£'+prod_price.toString(),style: TextStyle(color:Colors.black)),
+          title:  Text('£ ' +prod_old_price.toString(),style: TextStyle(color:Colors.red),),
+          subtitle: Text('£ ' +prod_price.toString(),style: TextStyle(color:Colors.black)),
+          trailing: Icon(Icons.star),
 
         ),
         child:  
-        Image.asset(prod_picture, fit: BoxFit.cover,),
+        Image.network(prod_picture, fit: BoxFit.cover,),
         )
               ),
     );

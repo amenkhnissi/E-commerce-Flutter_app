@@ -182,7 +182,7 @@ class _SignupState extends State<Signup> {
                                   
                                 dynamic result =
                                     await _auth.registerWithEmailAndPassword(
-                                        email, password);
+                                        email.trim(), password.trim());
                                         
                                 if (result == null) {
 

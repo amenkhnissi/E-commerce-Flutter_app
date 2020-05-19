@@ -88,7 +88,7 @@ class _SigninState extends State<Signin> {
                                 fontSize: 30),
                           )),
                       SizedBox(
-                        width: 100.0,
+                        width: 90.0,
                       ),
                       FadeAnimation(
                           1.5,
@@ -97,7 +97,7 @@ class _SigninState extends State<Signin> {
                                 Navigator.pushNamed(context, 'home');
                               },
                               icon: Icon(Icons.home),
-                              label: Text('Home'))),
+                              label: Text('Explore'))),
                     ],
                   ),
                   SizedBox(
@@ -202,7 +202,7 @@ class _SigninState extends State<Signin> {
                                 });
                                 dynamic result =
                                     await _auth.signInWithEmailAndPassword(
-                                        email, password);
+                                        email.trim(), password.trim());
                                 if (result == null) {
                                   setState(() {
                                      loading = false;

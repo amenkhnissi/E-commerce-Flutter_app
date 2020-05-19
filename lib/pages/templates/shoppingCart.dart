@@ -1,5 +1,7 @@
 
+import 'package:fisrtapp/pages/widgets/productColorSelector.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 
 class ShoppingCart extends StatefulWidget {
@@ -64,23 +66,34 @@ class Cart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(5.0),
-      child: Container(
-          decoration: BoxDecoration(
-             color: Color.fromRGBO(250, 0, 0,150),
-             borderRadius: BorderRadius.circular(20.0)
-
-          ),
+      child: Container( 
+          decoration:
+          BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFFdad9d5),
+                  Color(0xFFdcd9d2).withOpacity(.2),
+                ],
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                stops: [0.0, 0.5],
+                tileMode: TileMode.clamp,
+              ),
+              borderRadius: BorderRadius.circular(20.0)
+            ),
           height: 120.0,
          
-          child:  Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: ListTile(
-                leading: Image.asset('assets/images/talon.png',fit: BoxFit.fitHeight,height: 200.0,),
-                title: Text('Article Name'),
-                subtitle: Text('\$ Price'),
-                trailing: Icon(Icons.delete),
-              ),
-          ),
+          child:  
+                       Padding(
+                         padding: const EdgeInsets.all(8.0),
+                         child: ListTile(
+                           leading: Image.asset('name'),
+                           title: Text('data'),
+                           subtitle: Text('price'),
+                           trailing: Text('count'),
+                         ),
+                       ),
+          
           
         ),
     );

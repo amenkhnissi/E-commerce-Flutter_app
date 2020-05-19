@@ -9,7 +9,7 @@ class AuthService {
 
   // create user obj based on firebase user
   User _userFromFirebaseUser(FirebaseUser user) {
-    return user != null ? User(uid: user.uid,email: user.email) : null;
+    return user != null ? User(uid: user.uid,email: user.email,profileImage: '',username: 'username') : null;
   }
 
   // auth change user stream
@@ -55,7 +55,7 @@ class AuthService {
       AuthResult result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       FirebaseUser user = result.user;
        // create a new document for the user with the uid
-      await DatabaseService(uid: user.uid,email: user.email).updateUserData('admin', user.email);
+      await DatabaseService().updateUserData(User(uid: user.uid,username: 'username',email: user.email,profileImage: ''));
       return _userFromFirebaseUser(user);
       
     } catch (error) {

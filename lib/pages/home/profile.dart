@@ -1,9 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fisrtapp/models/user.dart';
 import 'package:fisrtapp/services/database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import '../authenticate/Signin.dart';
+import 'package:path/path.dart';
+import 'dart:io';
+import 'dart:async';
 
 class Profile extends StatefulWidget {
   @override
@@ -13,21 +17,16 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
-
     final user = Provider.of<User>(context);
 
-    final users = Provider.of<QuerySnapshot>(context);
-
-    final profile =  user == null ? null  : DatabaseService().getData(user.uid);
-
-    
+    final profile = user == null ? null : DatabaseService().getData(user.uid);
 
     void _ShowSettings() {
       showModalBottomSheet(
           context: context,
           builder: (context) {
             return Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(8.0),
               child: UserUpdateForm(),
             );
           });
@@ -37,14 +36,20 @@ class _ProfileState extends State<Profile> {
       child: new StreamBuilder(
           stream: profile,
           builder: (context, snapshot) {
+            if (snapshot.hasData) ;
+            var user = snapshot.data;
+
             return UserAccountsDrawerHeader(
               accountName: !snapshot.hasData
-                  ? Text('')
+                  ? Text('Username')
                   : Text(snapshot.data['username']),
-              accountEmail:
-                  !snapshot.hasData ? Text('') : Text(snapshot.data['email']),
+              accountEmail: !snapshot.hasData
+                  ? Text('Email account')
+                  : Text(snapshot.data['email']),
               currentAccountPicture: CircleAvatar(
-                backgroundImage: AssetImage('assets/images/pic2.jpg') ,
+                backgroundImage: user['profileImage'] == ''
+                    ? AssetImage('assets/images/avatar.jpg')
+                    : NetworkImage(user['profileImage']),
               ),
               otherAccountsPictures: <Widget>[
                 InkWell(
@@ -65,116 +70,182 @@ class UserUpdateForm extends StatefulWidget {
 }
 
 class _UserUpdateFormState extends State<UserUpdateForm> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  DatabaseService database = DatabaseService();
+  File _image;
+  String _imagelink;
+  // text field state
+  String _email;
+  //String password = '';
+  String _username;
+
   @override
   Widget build(BuildContext context) {
-
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    
     final user = Provider.of<User>(context);
-    final profile =  user == null ? null: DatabaseService().getData(user.uid);
+    final profile = user == null ? null : DatabaseService().getData(user.uid);
 
-    String error = '';
+    // Get Image
+    Future getImage() async {
+      var image = await ImagePicker.pickImage(source: ImageSource.gallery);
 
-    // text field state
-    String _email = 'teste';
-    //String password = '';
-    String _username = 'testu';
+      setState(() {
+        _image = image;
+      });
+    }
 
-    return StreamBuilder(
-      stream: profile,
-      builder: (context, snapshot){
+    // Update User profile
+    Future updateProfile(BuildContext context,String useremail,String userusername,String userprofileImage) async {
 
-      
-         return Form(
-        key: _formKey,
-        child: Column(
-          children: <Widget>[
-            Text(
-              "Update Profile",
-              style: TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20),
-            ),
-            Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.grey[200]))),
-              child: TextFormField(
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: !snapshot.hasData ? "" : snapshot.data['email'],
-                    icon: Icon(Icons.email),
-                    hintStyle: TextStyle(color: Colors.grey),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  /* validator: validateEmail, */
-                  onChanged: (val) {
-                    setState(() => _email = val);
-                  }),
-            ),
-            Container(
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.grey[200]))),
-              child: TextFormField(
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: !snapshot.hasData ? "" : snapshot.data['username'] ,
-                    icon: Icon(Icons.supervised_user_circle),
-                    hintStyle: TextStyle(color: Colors.grey),
-                  ),
-                  
-                  /* validator: (val) {
-                    if (val.length < 4 )
-                      return 'Invalid username';
-                    else
-                      return null;
-                  }, */
-                  onChanged: (val) {
-                    setState(() => _username = val);
-                  }),
-            ),
-            /* Container(
-              padding: EdgeInsets.all(10),
-              child: TextFormField(
-                decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "Password",
-                    icon: Icon(Icons.lock_outline),
-                    hintStyle: TextStyle(color: Colors.grey)),
-                keyboardType: TextInputType.visiblePassword,
-                validator: validatePassword,
-                obscureText: true,
-                onChanged: (val) {
-                  setState(() => password = val);
-                },
-              ),
-            ), */
-            Center(
-              child: RaisedButton(
-                color: Colors.redAccent,
-                onPressed: () async {
+      if (_image != null) {
+        String fileName = basename(_image.path);
+        String profileImage = "ProfileImage";
+        StorageReference firebaseStorageRef =
+            FirebaseStorage.instance.ref().child(profileImage).child(fileName);
+        StorageUploadTask uploadTask = firebaseStorageRef.putFile(_image);
+        StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
 
-                  if (_formKey.currentState.validate())  {
-                   await DatabaseService(uid: user.uid, email: user.email).updateUserData(
-                     _username == null ? snapshot.data['username'] :  _username , 
-                     _email == null ? snapshot.data['email'] : _email,
-                     ); 
-                    Navigator.pop(context);
-                  }
-                
-                    
-                },
-                child: Text(
-                  "Update",
-                  style: TextStyle(color: Colors.white),
+        final imageUrl = await firebaseStorageRef.getDownloadURL();
+        setState(() {
+          _imagelink = imageUrl;
+        });
+      } else {
+        DatabaseService(uid: user.uid).updateUserData(User(
+          email: _email == null ? useremail : _email,
+          username: _username == null ? userusername : _username,
+          profileImage: _imagelink == null ? userprofileImage : _imagelink,
+        ));
+
+        Fluttertoast.showToast(msg: 'Profile Successfully updated ');
+        Navigator.pop(context);
+      }
+    }
+
+    
+    return 
+        StreamBuilder(
+          stream: profile,
+          builder: (context, snapshot) {
+            if(snapshot.hasData);
+            var data = snapshot.data;
+            return Container(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Padding(
+                          padding:
+                              const EdgeInsets.only(right: 50.0, left: 100.0),
+                          child: SizedBox(
+                            height: 80.0,
+                            width: 80.0,
+                            child: CircleAvatar(
+                              backgroundImage: _image == null
+                                  ? NetworkImage(snapshot.data['profileImage'])
+                                  : FileImage(_image),
+                            ),
+                          ),
+                        ),
+                        FloatingActionButton(
+                          onPressed: () async {
+                            await getImage();
+                          },
+                          child: Icon(Icons.add_a_photo),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      "Update Profile",
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(color: Colors.grey[200]))),
+                      child: TextFormField(
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText:
+                                !snapshot.hasData ? "" : snapshot.data['email'],
+                            icon: Icon(Icons.email),
+                            hintStyle: TextStyle(color: Colors.grey),
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                          /* validator: validateEmail, */
+                          onChanged: (val) {
+                            setState(() => _email = val);
+                          }),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(color: Colors.grey[200]))),
+                      child: TextFormField(
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: !snapshot.hasData
+                                ? ""
+                                : snapshot.data['username'],
+                            icon: Icon(Icons.supervised_user_circle),
+                            hintStyle: TextStyle(color: Colors.grey),
+                          ),
+
+                          /* validator: (val) {
+                          if (val.length < 4 )
+                            return 'Invalid username';
+                          else
+                            return null;
+                        }, */
+                          onChanged: (val) {
+                            setState(() => _username = val);
+                          }),
+                    ),
+                    /* Container(
+                    padding: EdgeInsets.all(10),
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Password",
+                          icon: Icon(Icons.lock_outline),
+                          hintStyle: TextStyle(color: Colors.grey)),
+                      keyboardType: TextInputType.visiblePassword,
+                      validator: validatePassword,
+                      obscureText: true,
+                      onChanged: (val) {
+                        setState(() => password = val);
+                      },
+                    ),
+                  ), */
+                    Center(
+                      child: RaisedButton(
+                        color: Colors.redAccent,
+                        onPressed: () async {
+                          if (_formKey.currentState.validate()) {
+                            updateProfile(context,data['email'],data['username'],data['profileImage']);
+                          } else {
+                            Fluttertoast.showToast(msg: "Form not validated");
+                          }
+                        },
+                        child: Text(
+                          "Update",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
-        ),
-      );
-      },
-    );
+            );
+          },
+        );
+     
   }
 }

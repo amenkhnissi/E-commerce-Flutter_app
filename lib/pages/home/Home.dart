@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fisrtapp/pages/Wrapper.dart';
+import 'package:fisrtapp/pages/widgets/shopCartNotifications.dart';
 import 'package:fisrtapp/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import '../templates/Product.dart';
 import '../templates/Product_categories.dart';
-import '../templates/Shopping_cart.dart';
 import '../../services/auth.dart';
 import 'package:provider/provider.dart';
 import '../../models/user.dart';
@@ -18,8 +18,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+
   var tabController;
   final AuthService _auth = AuthService();
+  final DatabaseService _database = DatabaseService();
 
   @override
   void initState() {
@@ -42,21 +44,37 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       value: DatabaseService().user,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.redAccent,
+          backgroundColor: Colors.blueAccent,
           title: Text('Store'),
           actions: <Widget>[
             IconButton(icon: Icon(Icons.search), onPressed: () {}),
-            IconButton(
-                icon: Icon(Icons.shopping_cart),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ShoppingCart()));
-                })
+            ShopCartNotification(),
           ],
         ),
         //Drawer
 
-          drawer: Drawer(
+          drawer: user == null ? Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              FlatButton.icon(onPressed: (){},
+               icon: Icon(Icons.store) , 
+               label: Text('Sign in',style: TextStyle(color:Colors.black,fontWeight: FontWeight.w800),),
+               color: Colors.white70,
+               shape:RoundedRectangleBorder(
+                 borderRadius: BorderRadius.circular(10.0)
+               ),
+               ),
+              FlatButton.icon(onPressed: (){},
+               icon: Icon(Icons.store) , 
+               label: Text('Sign up',style: TextStyle(color:Colors.black,fontWeight: FontWeight.w800),),
+               color: Colors.white70,
+               shape:RoundedRectangleBorder(
+                 borderRadius: BorderRadius.circular(10.0)
+               ),
+               ),
+            ],
+          ) :    Drawer(
           child: ListView(
             children: <Widget>[
               // User account Info
@@ -101,6 +119,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   FlatButton.icon(
                       onPressed: () async {
                         await _auth.signOut();
+                        Navigator.pushNamed(context, 'Signin');
                       },
                       icon: Icon(Icons.person),
                       label: Text('Sign out'))
@@ -115,7 +134,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             //Carousol
             SizedBox(
               height: 220.0,
-              child: Carousel(boxFit: BoxFit.cover, images: [
+              child: Carousel(boxFit: BoxFit.cover,
+              showIndicator: false, 
+              images: [
                AssetImage('assets/images/pic1.jpg'),
                AssetImage('assets/images/pic3.jpg'),
                 
@@ -125,22 +146,22 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             //Categories ListView
 
             ListTile(
-              leading: Icon(Icons.category),
+              leading: Icon(Icons.category,color: Colors.black,),
               title: Text('Categories',
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
 
-            Container(height: 100.0, child: ProductCategories()),
+            Container(height: 150.0, child: ProductCategories()),
 
-            //GridView
+            // Products GridView
 
             ListTile(
-              leading: Icon(Icons.shop),
+              leading: Icon(Icons.shop,color: Colors.black),
               title: Text('Products',
                   style: TextStyle(fontWeight: FontWeight.bold)),
             ),
 
-            Container(height: 180.0, child: Products()),
+            Container(height: 350.0, child: Products()),
             //Fashion Desc
 
             Padding(

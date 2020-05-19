@@ -1,9 +1,8 @@
 import 'package:fisrtapp/Welcome.dart';
-
+import 'package:fisrtapp/pages/templates/shoppingCart.dart';
 import './pages/home/Home.dart';
 import './pages/authenticate/Signin.dart';
 import './pages/authenticate/Signup.dart';
-import './pages/Wrapper.dart';
 import './services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +24,7 @@ class MyApp extends StatelessWidget {
           'home': (context)=> Home(),
           'Signin':(context)=>Signin(),
           'Signup':(context)=>Signup(), 
+          'Shopping Cart':(context)=>ShoppingCart(), 
           },
         home: WelcomePage(),
       ),
